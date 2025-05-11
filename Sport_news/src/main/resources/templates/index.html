@@ -296,8 +296,13 @@
         </div>
 
         <!-- VK News Widget Section -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">Новости нашей группы Вконтакте</h2>
+            </div>
+        </div>
+
         <div class="vk-news-section mb-5">
-            <h2 class="section-title">Новости нашей группы Вконтакте</h2>
             <div class="card">
                 <div class="card-body">
                     <div id="vk_groups"></div>
@@ -391,11 +396,14 @@
                             <div class="card-body">
                                 <h5 th:text="${contact.title}"></h5>
                                 <p th:text="${contact.content}"></p>
-                                <small class="text-muted" th:text="${contact.type == 'PHONE' ? 'Телефон' : 
-                                    contact.type == 'EMAIL' ? 'Email' : 
-                                    contact.type == 'ADDRESS' ? 'Адрес' : 
-                                    contact.type == 'SOCIAL_MEDIA' ? 'Социальные сети' : 
-                                    contact.type == 'OTHER' ? 'Другое' : contact.type}"></small>
+                                <small class="text-muted" th:switch="${contact.type}">
+                                    <span th:case="'PHONE'">Телефон</span>
+                                    <span th:case="'EMAIL'">Email</span>
+                                    <span th:case="'ADDRESS'">Адрес</span>
+                                    <span th:case="'SOCIAL_MEDIA'">Социальные сети</span>
+                                    <span th:case="'OTHER'">Другое</span>
+                                    <span th:case="*">[[${contact.type}]]</span>
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -633,6 +641,8 @@
 
         function showAddContactForm() {
             const addContactModal = new bootstrap.Modal(document.getElementById('addContactModal'));
+            // Очищаем форму при открытии
+            document.getElementById('contactForm').reset();
             addContactModal.show();
         }
 
@@ -758,6 +768,11 @@
                 });
                 
                 if (response.ok) {
+                    const addContactModal = bootstrap.Modal.getInstance(document.getElementById('addContactModal'));
+                    addContactModal.hide();
+                    // Очищаем форму
+                    document.getElementById('contactForm').reset();
+                    // Перезагружаем страницу
                     location.reload();
                 }
             } catch (error) {
